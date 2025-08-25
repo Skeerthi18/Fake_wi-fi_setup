@@ -15,5 +15,3 @@
 4.iptables – Packet redirection
 5.Python 3 – Backend scripting
 6.Flask – Phishing login portal
-
-#

